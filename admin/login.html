@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/admin.css"><title>Admin Login — AA Classes</title></head>
+<body>
+<div class="admin-login-wrap">
+ <div class="admin-login-card">
+  <div class="brand"><div class="brand-mark">AA</div><div class="brand-text"><strong>AA Classes</strong><span>ADMIN</span></div></div>
+  <h3>Admin Sign In</h3>
+  <p class="modal-sub">Sign in using your Supabase email and password.</p>
+  <form id="loginForm">
+   <div class="form-field"><label>Email</label><input id="email" type="email" required></div>
+   <div class="form-field"><label>Password</label><input id="password" type="password" required></div>
+   <p id="error" class="form-error" style="display:none;margin-bottom:14px"></p>
+   <button class="btn btn-navy btn-block" id="loginBtn">Sign In</button>
+  </form>
+  <p style="text-align:center;margin-top:18px"><a href="../index.html" style="color:var(--slate)">← Back to website</a></p>
+ </div>
+</div>
+<div class="toast-host" id="toastHost"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL='https://zgrctvejgmyubhnxrlqr.supabase.co';
+const SUPABASE_KEY='sb_publishable_s6UQp7nI3LPyXDJ4u6mipg_62wsb-ZW';
+const sb=(!SUPABASE_KEY.includes('PASTE_YOUR_'))?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+(async()=>{if(!sb){error.textContent='Add your Supabase publishable key in admin/login.html and js/admin.js.';error.style.display='block';return;}const {data}=await sb.auth.getSession();if(data.session)location.href='dashboard.html';})();
+loginForm.onsubmit=async e=>{e.preventDefault();error.style.display='none';if(!sb){error.textContent='Supabase is not configured yet.';error.style.display='block';return;}loginBtn.disabled=true;loginBtn.textContent='Signing in...';const {data,err}=await (async()=>{const r=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});return {data:r.data,err:r.error}})();loginBtn.disabled=false;loginBtn.textContent='Sign In';if(err||!data?.session){error.textContent='Incorrect email or password.';error.style.display='block';return;}location.href='dashboard.html';};
+</script>
+</body></html>
