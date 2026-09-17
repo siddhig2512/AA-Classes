@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/admin.css"><title>Admin Dashboard — AA Classes</title></head>
+<body>
+<div class="admin-shell">
+<aside class="admin-sidebar">
+ <div class="brand"><div class="brand-mark">AA</div><div class="brand-text"><strong>AA Classes</strong><span>ADMIN PANEL</span></div></div>
+ <nav class="admin-nav">
+  <button class="active" data-panel="dashboard">Dashboard</button>
+  <button data-panel="materials">Study Material</button>
+  <button data-panel="reviews">Reviews</button>
+  <button data-panel="enquiries">Enquiries</button>
+  <button data-panel="contact">Contact Info</button>
+ </nav>
+ <a href="#" class="admin-back" id="logout">↪ Log out</a>
+</aside>
+<main class="admin-main">
+<section class="admin-panel active" id="panel-dashboard"><div class="admin-topbar"><h2>Dashboard</h2></div><div class="stat-grid" id="stats"></div></section>
+<section class="admin-panel" id="panel-materials"><div class="admin-topbar"><h2>Manage Study Material</h2><button class="btn btn-gold btn-sm" id="openUpload">+ Upload Material</button></div><div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Category</th><th>Subject</th><th>Class</th><th>Type</th><th>Downloads</th><th>Action</th></tr></thead><tbody id="materialsBody"></tbody></table></div></div></section>
+<section class="admin-panel" id="panel-reviews"><div class="admin-topbar"><h2>Manage Reviews</h2></div><div class="admin-card"><h4>Pending Approval</h4><div class="table-wrap"><table><thead><tr><th>Name</th><th>Class/Course</th><th>Rating</th><th>Review</th><th>Actions</th></tr></thead><tbody id="pendingBody"></tbody></table></div></div><div class="admin-card"><h4>All Reviews</h4><div class="table-wrap"><table><thead><tr><th>Name</th><th>Rating</th><th>Review</th><th>Status</th><th>Action</th></tr></thead><tbody id="allReviewsBody"></tbody></table></div></div></section>
+<section class="admin-panel" id="panel-enquiries"><div class="admin-topbar"><h2>Enquiries</h2></div><div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Student</th><th>Parent</th><th>Phone</th><th>Email</th><th>Class</th><th>Course</th><th>Message</th></tr></thead><tbody id="enquiriesBody"></tbody></table></div></div></section>
+<section class="admin-panel" id="panel-contact"><div class="admin-topbar"><h2>"Talk to Our Counsellors" Section</h2></div><div class="admin-card" style="max-width:560px"><p style="color:var(--slate);margin-bottom:20px">Edit the contact details shown on the public Contact page.</p><form id="contactForm"><div class="form-field"><label>Address</label><textarea id="setAddress"></textarea></div><div class="form-field"><label>Phone Number</label><input id="setPhone"></div><div class="form-field"><label>Email</label><input id="setEmail" type="email"></div><div class="form-field"><label>Office Timings</label><input id="setTimings"></div><button class="btn btn-navy btn-block">Save Contact Details</button></form></div></section>
+</main></div>
+<div class="modal-overlay" id="uploadOverlay"><div class="modal-box"><button class="modal-close" id="closeUpload">×</button><div class="modal-eyebrow">Study material</div><h3>Upload Material</h3><p class="modal-sub">Allowed files: PDF, Word DOC and DOCX. Maximum 8 MB.</p><form id="uploadForm"><div class="form-field"><label>Material Title</label><input id="upTitle" required></div><div class="form-field"><label>Category</label><select id="upCategory"><option value="notes">Notes</option><option value="papers">Practice Paper</option></select></div><div class="form-field"><label>Subject</label><input id="upSubject" required></div><div class="form-field"><label>Class / Course</label><input id="upClass" required></div><div class="form-field"><label>Short Description</label><textarea id="upDesc"></textarea></div><div class="form-field"><label>File (PDF / DOC / DOCX)</label><input id="upFile" type="file" accept=".pdf,.doc,.docx" required><span class="form-hint">PDF, DOC or DOCX only · up to 8 MB</span></div><button class="btn btn-navy btn-block" id="uploadBtn">Upload Material</button></form></div></div>
+<div class="toast-host" id="toastHost"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="../js/admin.js"></script>
+</body></html>
