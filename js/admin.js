@@ -408,7 +408,76 @@ uploadForm.onsubmit=async e=>{
     }
 
 };
+// -------------------------------
+// DELETE STUDY MATERIAL
+// -------------------------------
 
+window.deleteMaterial = async function(id){
+
+    const material = materials.find(m => m.id === id);
+
+    if(!material){
+        toast('Material not found.','error');
+        return;
+    }
+
+    const confirmed = confirm(
+        `Are you sure you want to delete "${material.title}"?`
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        // 1. Delete the actual file from Supabase Storage
+        if(material.file_path){
+
+            const { error: storageError } = await sb.storage
+                .from('study-materials')
+                .remove([material.file_path]);
+
+            if(storageError){
+                console.error('Storage delete error:', storageError);
+                toast(
+                    'Could not delete the file: ' + storageError.message,
+                    'error'
+                );
+                return;
+            }
+        }
+
+        // 2. Delete the material record from the database
+        const { error: databaseError } = await sb
+            .from('study_materials')
+            .delete()
+            .eq('id', id);
+
+        if(databaseError){
+            console.error('Database delete error:', databaseError);
+            toast(
+                'Could not delete material: ' + databaseError.message,
+                'error'
+            );
+            return;
+        }
+
+        toast('Study material deleted successfully.','success');
+
+        // 3. Refresh the admin dashboard
+        await load();
+
+    }catch(error){
+
+        console.error('Delete error:', error);
+
+        toast(
+            'Delete failed: ' + error.message,
+            'error'
+        );
+    }
+}
 
 // -------------------------------
 // CONTACT DETAILS
