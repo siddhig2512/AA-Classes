@@ -1322,58 +1322,110 @@ function renderReviews(){
 
 function renderContact(){
 
-  const addressEls=
-    document.querySelectorAll(
-      '[data-contact="address"]'
-    );
+  const rows=document.getElementById('contactInfoRows');
 
-  const phoneEls=
-    document.querySelectorAll(
-      '[data-contact="phone"]'
-    );
+  if(!rows)return;
 
-  const emailEls=
-    document.querySelectorAll(
-      '[data-contact="email"]'
-    );
+  const address=contactSettings.address||'';
+  const phone=contactSettings.phone||'';
+  const email=contactSettings.email||'';
+  const timings=contactSettings.timings||'';
 
-  const timingEls=
-    document.querySelectorAll(
-      '[data-contact="timings"]'
-    );
+  rows.innerHTML=`
 
-
-  addressEls.forEach(el=>{
-    if(contactSettings.address){
-      el.textContent=
-        contactSettings.address;
+    ${
+      address
+      ? `
+        <div class="contact-row">
+          <div class="contact-row-icon">📍</div>
+          <div class="contact-row-text">
+            <strong>Address</strong>
+            <span>${esc(address)}</span>
+          </div>
+        </div>
+      `
+      : ''
     }
-  });
 
-
-  phoneEls.forEach(el=>{
-    if(contactSettings.phone){
-      el.textContent=
-        contactSettings.phone;
+    ${
+      phone
+      ? `
+        <div class="contact-row">
+          <div class="contact-row-icon">📞</div>
+          <div class="contact-row-text">
+            <strong>Phone</strong>
+            <span>${esc(phone)}</span>
+          </div>
+        </div>
+      `
+      : ''
     }
-  });
 
-
-  emailEls.forEach(el=>{
-    if(contactSettings.email){
-      el.textContent=
-        contactSettings.email;
+    ${
+      email
+      ? `
+        <div class="contact-row">
+          <div class="contact-row-icon">✉️</div>
+          <div class="contact-row-text">
+            <strong>Email</strong>
+            <span>${esc(email)}</span>
+          </div>
+        </div>
+      `
+      : ''
     }
-  });
 
-
-  timingEls.forEach(el=>{
-    if(contactSettings.timings){
-      el.textContent=
-        contactSettings.timings;
+    ${
+      timings
+      ? `
+        <div class="contact-row">
+          <div class="contact-row-icon">🕒</div>
+          <div class="contact-row-text">
+            <strong>Office Hours</strong>
+            <span>${esc(timings)}</span>
+          </div>
+        </div>
+      `
+      : ''
     }
-  });
 
+  `;
+
+  const whatsappBtn=document.getElementById('whatsappBtn');
+
+  if(whatsappBtn){
+
+    if(phone){
+
+      const cleanPhone=phone.replace(/\D/g,'');
+
+      whatsappBtn.disabled=false;
+
+      whatsappBtn.textContent='WhatsApp / Call Now';
+
+      whatsappBtn.onclick=()=>{
+
+        window.open(
+          `https://wa.me/${cleanPhone}`,
+          '_blank'
+        );
+
+      };
+
+    }else{
+
+      whatsappBtn.disabled=true;
+
+      whatsappBtn.textContent=
+        'WhatsApp / Call Now — add number to enable';
+
+      whatsappBtn.onclick=null;
+
+    }
+
+  }
+
+}
 }
 
 
