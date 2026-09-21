@@ -3,7 +3,7 @@ const SUPABASE_KEY='sb_publishable_s6UQp7nI3LPyXDJ4u6mipg_62wsb-ZW';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let materials=[], reviews=[], enquiries=[];
+let materials=[], reviews=[], enquiries=[], students=[];
 let settings={address:'',phone:'',email:'',timings:''};
 
 // Get HTML elements explicitly
@@ -12,6 +12,7 @@ const materialsBody = document.getElementById('materialsBody');
 const pendingBody = document.getElementById('pendingBody');
 const allReviewsBody = document.getElementById('allReviewsBody');
 const enquiriesBody = document.getElementById('enquiriesBody');
+const studentsBody = document.getElementById('studentsBody');
 
 const logout = document.getElementById('logout');
 
@@ -67,7 +68,7 @@ async function authGuard(){
 
 async function load(){
 
-    const [m,r,e,c]=await Promise.all([
+    const [m,r,e,c,s]=await Promise.all([
         sb.from('study_materials')
           .select('*')
           .order('created_at',{ascending:false}),
@@ -83,23 +84,37 @@ async function load(){
         sb.from('contact_settings')
           .select('*')
           .eq('id',1)
-          .maybeSingle()
+          .maybeSingle(),
+
+        sb.rpc('admin_get_students')
     ]);
 
-    if(m.error || r.error || e.error || c.error){
-        console.error('Load error:',m.error,r.error,e.error,c.error);
-        toast('Could not load data. Check your Supabase tables and RLS policies.','error');
+    if(m.error || r.error || e.error || c.error || s.error){
+        console.error(
+            'Load error:',
+            m.error,
+            r.error,
+            e.error,
+            c.error,
+            s.error
+        );
+
+        toast(
+            'Could not load data. Check your Supabase tables and RLS policies.',
+            'error'
+        );
+
         return;
     }
 
     materials=m.data || [];
     reviews=r.data || [];
     enquiries=e.data || [];
+    students=s.data || [];
     settings=c.data || settings;
 
     render();
 }
-
 function render(){
 
     stats.innerHTML=`
@@ -197,6 +212,57 @@ function render(){
         </tr>
     `).join('') ||
     '<tr><td colspan="7" class="empty-mini">No enquiries yet.</td></tr>';
+    
+    studentsBody.innerHTML=students.map(s=>{
+
+    const used=Number(s.downloads_used || 0);
+    const unlimited=Boolean(s.unlimited_access);
+
+    const remaining=unlimited
+        ? 'Unlimited'
+        : Math.max(0,3-used);
+
+    return `
+        <tr>
+            <td>${esc(s.name)}</td>
+
+            <td>${esc(s.klass)}</td>
+
+            <td>${esc(s.email)}</td>
+
+            <td>${unlimited ? 'Unlimited' : used+'/3'}</td>
+
+            <td>${remaining}</td>
+
+            <td>
+                <span class="badge ${unlimited ? 'approved' : 'pending'}">
+                    ${unlimited ? 'Unlimited' : 'Standard'}
+                </span>
+            </td>
+
+            <td>
+                ${
+                    unlimited
+                    ? `
+                        <button
+                            class="icon-btn danger"
+                            onclick="setStudentUnlimited('${s.id}',false)">
+                            Remove Unlimited
+                        </button>
+                      `
+                    : `
+                        <button
+                            class="icon-btn"
+                            onclick="setStudentUnlimited('${s.id}',true)">
+                            Give Unlimited
+                        </button>
+                      `
+                }
+            </td>
+        </tr>
+    `;
+}).join('') ||
+'<tr><td colspan="7" class="empty-mini">No students registered yet.</td></tr>';
 
     setAddress.value=settings.address || '';
     setPhone.value=settings.phone || '';
@@ -522,6 +588,86 @@ contactForm.onsubmit=async e=>{
 
 };
 
+// -------------------------------
+// STUDENT ACCESS CONTROL
+// -------------------------------
+
+window.setStudentUnlimited = async function(studentId, accessValue){
+
+    const student=students.find(s=>s.id===studentId);
+
+    if(!student){
+        toast('Student not found.','error');
+        return;
+    }
+
+    const action=accessValue
+        ? 'give Unlimited Access to'
+        : 'remove Unlimited Access from';
+
+    const confirmed=confirm(
+        `Are you sure you want to ${action} ${student.name}?`
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        const {data,error}=await sb.rpc(
+            'admin_set_unlimited_access',
+            {
+                student_id:studentId,
+                access_value:accessValue
+            }
+        );
+
+        if(error){
+            console.error(
+                'Student access error:',
+                error
+            );
+
+            toast(
+                'Could not update student access: '+error.message,
+                'error'
+            );
+
+            return;
+        }
+
+        if(!data?.success){
+            toast(
+                data?.message || 'Could not update student access.',
+                'error'
+            );
+
+            return;
+        }
+
+        toast(
+            accessValue
+                ? 'Unlimited Access granted successfully.'
+                : 'Unlimited Access removed successfully.',
+            'success'
+        );
+
+        await load();
+
+    }catch(error){
+
+        console.error(
+            'Student access error:',
+            error
+        );
+
+        toast(
+            'Could not update student access: '+error.message,
+            'error'
+        );
+    }
+};
 
 // -------------------------------
 // START ADMIN
