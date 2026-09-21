@@ -1426,8 +1426,6 @@ function renderContact(){
   }
 
 }
-}
-
 
 /* =========================
    REVIEW FORM
