@@ -816,13 +816,12 @@ async function studentForgotPassword(e) {
       });
 
     if (error) {
-      setStudentMessage(
-        'Could not send the reset email. Please try again.',
-        'error'
-      );
-      return;
-    }
-
+  setStudentMessage(
+    error.message,
+    'error'
+  );
+  return;
+}
     setStudentMessage(
       'If an account exists with this email, a password reset link will be sent. Please check your inbox.',
       'success'
