@@ -781,11 +781,17 @@ function setStudentMessage(message,type=''){
 
 }
 
-async function studentForgotPassword(e){
 
+async function studentForgotPassword(e) {
   e.preventDefault();
 
-  if(!supabaseClient){
+  const form = e.currentTarget;
+  const button = form.querySelector('button[type="submit"]');
+
+  // Prevent duplicate submissions
+  if (button.disabled) return;
+
+  if (!supabaseClient) {
     setStudentMessage(
       'Website is not connected to Supabase.',
       'error'
@@ -793,29 +799,44 @@ async function studentForgotPassword(e){
     return;
   }
 
-  const email=document
+  const email = document
     .getElementById('studentEmail')
     .value
     .trim()
     .toLowerCase();
 
-  const {error}=await supabaseClient.auth
-    .resetPasswordForEmail(email,{
-      redirectTo:window.location.origin+'/reset-password.html'
-    });
+  button.disabled = true;
+  button.textContent = 'Sending...';
 
-  if(error){
+  try {
+    const { error } = await supabaseClient.auth
+      .resetPasswordForEmail(email, {
+        redirectTo:
+          window.location.origin + '/reset-password.html'
+      });
+
+    if (error) {
+      setStudentMessage(
+        'Could not send the reset email. Please try again.',
+        'error'
+      );
+      return;
+    }
+
     setStudentMessage(
-      error.message,
+      'If an account exists with this email, a password reset link will be sent. Please check your inbox.',
+      'success'
+    );
+
+  } catch (error) {
+    setStudentMessage(
+      'Something went wrong. Please try again.',
       'error'
     );
-    return;
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Send Reset Link';
   }
-
-  setStudentMessage(
-    'If an account exists with this email, a password reset link will be sent. Please check your inbox.',
-    'success'
-  );
 }
 
 
