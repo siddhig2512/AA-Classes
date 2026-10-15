@@ -996,14 +996,16 @@ async function studentSignup(e){
   const {
     data,
     error
+  
   } = await supabaseClient.auth.signUp({
 
     email,
 
     password,
 
-    options:{
-      data:{
+    options: {
+      emailRedirectTo: 'https://aa-classes.vercel.app/',
+      data: {
         name,
         klass
       }
