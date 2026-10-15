@@ -555,8 +555,35 @@ function renderStudentAuthForm(mode='login'){
   }
 
 
-  if(mode==='signup'){
+  if(mode==='forgot'){
 
+    box.innerHTML=`
+      <h3>Reset Password</h3>
+      <p>Enter your registered email address to receive a password reset link.</p>
+
+      <form id="studentForgotPasswordForm">
+        <label for="studentEmail">Email ID</label>
+        <input id="studentEmail" type="email" required>
+
+        <div class="auth-actions">
+          <button class="btn btn-gold btn-block" type="submit">
+            Send Reset Link
+          </button>
+        </div>
+
+        <div id="studentAuthMessage"></div>
+
+        <div class="student-auth-switch">
+          Remember your password?
+          <button type="button" id="backToLoginBtn">Back to Login</button>
+        </div>
+      </form>
+    `;
+
+    box.querySelector('#studentForgotPasswordForm').onsubmit=studentForgotPassword;
+    box.querySelector('#backToLoginBtn').onclick=()=>renderStudentAuthForm('login');
+
+  }else if(mode==='signup'){
     box.innerHTML=`
 
       <h3>Create Student Account</h3>
@@ -692,10 +719,16 @@ function renderStudentAuthForm(mode='login'){
 
         </div>
 
+        <div style="text-align:right;margin-top:10px;">
+          <button
+            type="button"
+            id="forgotPasswordBtn"
+            style="border:0;background:none;color:#0B2545;font-weight:700;cursor:pointer;">
+            Forgot Password?
+          </button>
+        </div>
 
         <div id="studentAuthMessage"></div>
-
-
         <div class="student-auth-switch">
 
           Don't have an account?
@@ -718,9 +751,13 @@ function renderStudentAuthForm(mode='login'){
       .onsubmit=studentLogin;
 
 
-    box
+       box
       .querySelector('#showSignupBtn')
       .onclick=()=>renderStudentAuthForm('signup');
+
+    box
+      .querySelector('#forgotPasswordBtn')
+      .onclick=()=>renderStudentAuthForm('forgot');
 
   }
 
@@ -742,6 +779,43 @@ function setStudentMessage(message,type=''){
 
   }
 
+}
+
+async function studentForgotPassword(e){
+
+  e.preventDefault();
+
+  if(!supabaseClient){
+    setStudentMessage(
+      'Website is not connected to Supabase.',
+      'error'
+    );
+    return;
+  }
+
+  const email=document
+    .getElementById('studentEmail')
+    .value
+    .trim()
+    .toLowerCase();
+
+  const {error}=await supabaseClient.auth
+    .resetPasswordForEmail(email,{
+      redirectTo:window.location.origin+'/reset-password.html'
+    });
+
+  if(error){
+    setStudentMessage(
+      error.message,
+      'error'
+    );
+    return;
+  }
+
+  setStudentMessage(
+    'If an account exists with this email, a password reset link will be sent. Please check your inbox.',
+    'success'
+  );
 }
 
 
