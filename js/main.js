@@ -1349,70 +1349,47 @@ async function downloadMaterial(id){
    REVIEWS
 ========================= */
 
+
 function renderReviews(){
 
-  const grid=
-    document.getElementById('reviewGrid');
+  const grid = document.getElementById('reviewTrack');
+  if (!grid) return;
 
-  if(!grid)return;
-
-
-  if(!reviews.length){
-
-    grid.innerHTML=`
+  if (!reviews.length) {
+    grid.innerHTML = `
       <div class="empty-state">
         <p>No approved reviews yet.</p>
       </div>
     `;
-
     return;
   }
 
-
-  grid.innerHTML=
-    reviews.map(r=>`
-
-      <div class="review-card">
-
-        <div class="review-stars">
-          ${'★'.repeat(
-            Math.max(
-              1,
-              Math.min(
-                5,
-                Number(r.rating||5)
-              )
-            )
-          )}
-        </div>
-
-        <p class="review-message">
-          “${esc(r.message)}”
-        </p>
-
-        <div class="review-person">
-
-          <div class="review-avatar">
-            ${esc(
-              (r.name||'S')
-                .charAt(0)
-                .toUpperCase()
-            )}
-          </div>
-
-          <div>
-            <strong>${esc(r.name)}</strong>
-            <span>${esc(r.course||'Student')}</span>
-          </div>
-
-        </div>
-
+  grid.innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-stars">
+        ${'★'.repeat(
+          Math.max(1, Math.min(5, Number(r.rating || 5)))
+        )}
       </div>
 
-    `).join('');
+      <p class="review-message">
+        “${esc(r.message)}”
+      </p>
+
+      <div class="review-person">
+        <div class="review-avatar">
+          ${esc((r.name || 'S').charAt(0).toUpperCase())}
+        </div>
+
+        <div>
+          <strong>${esc(r.name)}</strong>
+          <span>${esc(r.course || 'Student')}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
 
 }
-
 
 /* =========================
    CONTACT SETTINGS
