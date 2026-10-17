@@ -1533,7 +1533,17 @@ function setupReviewForm(){
     document.getElementById('reviewForm');
 
   if(!form)return;
+const openButton =
+  document.getElementById('openReviewForm');
 
+const overlay =
+  document.getElementById('reviewFormOverlay');
+
+if (openButton && overlay) {
+  openButton.addEventListener('click', () => {
+    overlay.classList.add('open');
+  });
+}
 
   form.addEventListener(
     'submit',
