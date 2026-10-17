@@ -669,6 +669,67 @@ window.setStudentUnlimited = async function(studentId, accessValue){
     }
 };
 
+ // -------------------------------
+ // REVIEW APPROVE / REJECT / DELETE
+ // -------------------------------
+
+window.setReview = async function(id, status) {
+    if (!['approved', 'rejected'].includes(status)) {
+        toast('Invalid review status.', 'error');
+        return;
+    }
+
+    try {
+        const { error } = await sb
+            .from('reviews')
+            .update({ status: status })
+            .eq('id', id);
+
+        if (error) {
+            console.error('Review update error:', error);
+            toast('Could not update review: ' + error.message, 'error');
+            return;
+        }
+
+        toast(
+            status === 'approved'
+                ? 'Review approved successfully.'
+                : 'Review rejected successfully.',
+            'success'
+        );
+
+        await load();
+    } catch (error) {
+        console.error('Review update error:', error);
+        toast('Could not update review: ' + error.message, 'error');
+    }
+};
+
+window.deleteReview = async function(id) {
+    const confirmed = confirm('Are you sure you want to delete this review?');
+
+    if (!confirmed) return;
+
+    try {
+        const { error } = await sb
+            .from('reviews')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Review delete error:', error);
+            toast('Could not delete review: ' + error.message, 'error');
+            return;
+        }
+
+        toast('Review deleted successfully.', 'success');
+        await load();
+    } catch (error) {
+        console.error('Review delete error:', error);
+        toast('Could not delete review: ' + error.message, 'error');
+    }
+};
+
 // -------------------------------
 // START ADMIN
 // -------------------------------
