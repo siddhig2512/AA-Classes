@@ -1625,19 +1625,16 @@ document.addEventListener('keydown', (event) => {
       }
 
 
-      const {
-        error
-      }=await supabaseClient
-        .from('reviews')
-        .insert({
-
-          name,
-          course,
-          rating,
-          message,
-          status:'pending'
-
-        });
+      
+const { error } = await supabaseClient
+  .from('reviews')
+  .insert({
+    name,
+    klass: course || null,
+    rating,
+    review_text: message,
+    status: 'pending'
+  });
 
 
       if(error){
