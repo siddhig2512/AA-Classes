@@ -344,10 +344,67 @@
     </div>
   </div>
 </footer>
+
 <!-- Course Details Modal -->
 <div class="modal-overlay" id="courseModalOverlay">
   <div class="modal-box" id="courseModalBox"></div>
 </div>
+
+<!-- Review Form Modal -->
+<div class="modal-overlay" id="reviewFormOverlay">
+  <div class="modal-box review-form-box">
+    <button
+      type="button"
+      class="review-form-close"
+      id="closeReviewForm"
+      aria-label="Close review form">
+      &times;
+    </button>
+
+    <h2>Share Your Experience</h2>
+    <p>We'd love to hear about your learning experience at AA Classes.</p>
+
+    <form id="reviewForm">
+      <div class="form-field">
+        <label for="reviewName">Your Name</label>
+        <input id="reviewName" type="text" required>
+      </div>
+
+      <div class="form-field">
+        <label for="reviewCourse">Course / Class</label>
+        <input
+          id="reviewCourse"
+          type="text"
+          placeholder="e.g. Class 10 Mathematics">
+      </div>
+
+      <div class="form-field">
+        <label for="reviewRating">Your Rating</label>
+        <select id="reviewRating" required>
+          <option value="5">★★★★★ — Excellent</option>
+          <option value="4">★★★★ — Very Good</option>
+          <option value="3">★★★ — Good</option>
+          <option value="2">★★ — Fair</option>
+          <option value="1">★ — Needs Improvement</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="reviewMessage">Your Review</label>
+        <textarea
+          id="reviewMessage"
+          rows="4"
+          placeholder="Tell us about your experience..."
+          required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-block">
+        Submit Review
+      </button>
+    </form>
+  </div>
+</div>
+
 <div class="toast-host" id="toastHost"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/main.js"></script>
