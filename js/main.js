@@ -1544,6 +1544,28 @@ if (openButton && overlay) {
     overlay.classList.add('open');
   });
 }
+  const closeButton =
+  document.getElementById('closeReviewForm');
+
+if (closeButton && overlay) {
+  closeButton.addEventListener('click', () => {
+    overlay.classList.remove('open');
+  });
+}
+
+if (overlay) {
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) {
+      overlay.classList.remove('open');
+    }
+  });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && overlay) {
+    overlay.classList.remove('open');
+  }
+});
 
   form.addEventListener(
     'submit',
