@@ -51,15 +51,17 @@ function mapMaterial(r){
   };
 }
 
+
 function mapReview(r){
   return {
     ...r,
-    name:r.name||'Student',
-    course:r.course||'',
-    rating:Number(r.rating||5),
-    message:r.message||''
+    name: r.name || 'Student',
+    course: r.klass || r.course || '',
+    rating: Number(r.rating || 5),
+    message: r.review_text || r.message || ''
   };
 }
+
 
 async function loadData(){
 
