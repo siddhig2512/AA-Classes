@@ -430,3 +430,108 @@ tr:last-child td{border-bottom:none;}
 .hidden{display:none !important;}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
 :focus-visible{outline:2px solid var(--gold-dark);outline-offset:2px;}
+
+/* Review Form Modal */
+#reviewFormOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(5, 20, 40, 0.75);
+  overflow-y: auto;
+}
+
+#reviewFormOverlay.open {
+  display: flex;
+}
+
+#reviewFormOverlay .review-form-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+}
+
+#reviewFormOverlay .review-form-box h2 {
+  margin: 0 35px 10px 0;
+  color: #0B2545;
+}
+
+#reviewFormOverlay .review-form-box p {
+  margin-bottom: 24px;
+  color: #555;
+  line-height: 1.6;
+}
+
+#reviewFormOverlay .review-form-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  color: #0B2545;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#reviewFormOverlay .form-field {
+  margin-bottom: 18px;
+}
+
+#reviewFormOverlay .form-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #0B2545;
+  font-weight: 600;
+}
+
+#reviewFormOverlay .form-field input,
+#reviewFormOverlay .form-field select,
+#reviewFormOverlay .form-field textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #d5dbe3;
+  border-radius: 7px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+}
+
+#reviewFormOverlay .form-field input:focus,
+#reviewFormOverlay .form-field select:focus,
+#reviewFormOverlay .form-field textarea:focus {
+  outline: 2px solid #D9A441;
+  outline-offset: 1px;
+  border-color: #D9A441;
+}
+
+#reviewFormOverlay .form-field textarea {
+  resize: vertical;
+}
+
+#reviewFormOverlay .btn-block {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  #reviewFormOverlay {
+    padding: 12px;
+  }
+
+  #reviewFormOverlay .review-form-box {
+    padding: 24px 18px;
+  }
+}
+
+
