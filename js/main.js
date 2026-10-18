@@ -1635,10 +1635,10 @@ function renderContact(){
 
   if(!rows)return;
 
-  const address=contactSettings.address||'';
-  const phone=contactSettings.phone||'';
-  const email=contactSettings.email||'';
-  const timings=contactSettings.timings||'';
+  const address = contactSettings.address || 'Nyati Elysia, Kharadi, Pune - 411014';
+  const phone = contactSettings.phone || '9766410096';
+  const email = contactSettings.email || 'info@aaclasses.com';
+  const timings = contactSettings.timings || 'Monday – Saturday: 9:00 AM – 8:00 PM';
 
   rows.innerHTML=`
 
@@ -2008,38 +2008,42 @@ function setupEnquiry(){
 
 function setupNav(){
 
-  const toggle=
-    document.getElementById('navToggle');
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navLinks');
 
-  const links=
-    document.getElementById('navLinks');
+  if(toggle && links){
+    toggle.setAttribute('aria-expanded', 'false');
 
+    toggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const isOpen = links.classList.toggle('open');
+      toggle.classList.toggle('open', isOpen);
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
 
-  if(toggle&&links){
-
-    toggle.addEventListener(
-      'click',
-      ()=>{
-
-        links.classList.toggle('open');
-
-      }
-    );
-
-
-    links
-      .querySelectorAll('a')
-      .forEach(link=>{
-
-        link.addEventListener(
-          'click',
-          ()=>{
-            links.classList.remove('open');
-          }
-        );
-
+    links.querySelectorAll('a').forEach(link=>{
+      link.addEventListener('click', ()=>{
+        links.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
       });
+    });
 
+    document.addEventListener('click', (e)=>{
+      if(links.classList.contains('open') && !links.contains(e.target) && !toggle.contains(e.target)){
+        links.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && links.classList.contains('open')){
+        links.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
 
 
