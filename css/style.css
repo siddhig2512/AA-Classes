@@ -142,7 +142,7 @@ img,svg{display:block;max-width:100%;}
 /* ---------- About ---------- */
 .about-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
 .about-art{border-radius:var(--radius-l);overflow:hidden;box-shadow:var(--shadow-deep);}
-.about-art svg{width:100%;height:auto;display:block;}
+.about-art svg, .about-art img{width:100%;height:auto;display:block;object-fit:cover;}
 .about-copy p{color:var(--slate);font-size:16.5px;line-height:1.75;margin-bottom:36px;}
 .feature-list{display:flex;flex-direction:column;gap:0;}
 .feature-row{display:flex;gap:18px;padding:22px 0;border-top:1px solid var(--line);}
@@ -544,7 +544,166 @@ img,svg{display:block;max-width:100%;}
 .form-field.invalid .form-error{display:block;}
 @media (max-width:860px){ .contact-grid{grid-template-columns:1fr;} .form-grid{grid-template-columns:1fr;} }
 
-/* ---------- Footer ---------- */
+/* ---------- Enrollment Page ---------- */
+.enroll-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 48px;
+  align-items: start;
+}
+.enroll-info-card {
+  background: var(--navy-900);
+  color: var(--white);
+  border-radius: var(--radius-l);
+  padding: 42px;
+  box-shadow: var(--shadow-deep);
+}
+.enroll-info-card h3 {
+  color: var(--white);
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.enroll-info-card > p {
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.enroll-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(217,164,65,0.18);
+  color: var(--gold);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.enroll-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.enroll-perk {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.enroll-perk-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(217,164,65,0.16);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.enroll-perk-text strong {
+  display: block;
+  font-size: 14.5px;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.enroll-perk-text span {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.45;
+}
+.enroll-steps {
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 24px;
+}
+.enroll-steps h4 {
+  color: var(--gold);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 16px;
+}
+.enroll-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.enroll-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.85);
+}
+.enroll-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--navy-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.enroll-form-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  padding: 44px;
+  box-shadow: var(--shadow-soft);
+}
+.enroll-form-card h3 {
+  font-size: 25px;
+  color: var(--navy-900);
+  margin-bottom: 8px;
+}
+.enroll-form-card > p {
+  color: var(--slate);
+  font-size: 14.5px;
+  margin-bottom: 28px;
+}
+.contact-switch-card {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: var(--cream-dim);
+  border-radius: var(--radius-m);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.contact-switch-card p {
+  font-size: 13.5px;
+  color: var(--navy-900);
+}
+.contact-switch-card a {
+  font-weight: 700;
+  color: var(--gold-dark);
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+.contact-switch-card a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 920px) {
+  .enroll-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+@media (max-width: 600px) {
+  .enroll-form-card, .enroll-info-card {
+    padding: 26px 20px;
+  }
+}
 footer{background:#081A32;color:rgba(255,255,255,0.7);padding:70px 0 26px;}
 .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid rgba(255,255,255,0.1);}
 .footer-brand .brand-text strong{color:var(--white);}

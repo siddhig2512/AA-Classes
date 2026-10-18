@@ -1886,83 +1886,119 @@ const { error } = await supabaseClient
 
 function setupEnquiry(){
 
-  const form=
-    document.getElementById('enquiryForm');
+  const form = document.getElementById('enquiryForm');
+  if (!form) return;
 
-  if(!form)return;
+  const studentInput = document.getElementById('enqStudent');
+  const parentInput = document.getElementById('enqParent');
+  const phoneInput = document.getElementById('enqPhone');
+  const emailInput = document.getElementById('enqEmail');
+  const classSelect = document.getElementById('enqClass');
+  const courseSelect = document.getElementById('enqCourse');
+  const messageInput = document.getElementById('enqMessage');
+  const submitBtn = document.getElementById('enquirySubmitBtn');
 
+  // Clear validation error when user interacts
+  [studentInput, phoneInput, emailInput, classSelect, courseSelect].forEach(input => {
+    if (!input) return;
+    const clearError = () => {
+      const field = input.closest('.form-field');
+      if (field) field.classList.remove('invalid');
+    };
+    input.addEventListener('input', clearError);
+    input.addEventListener('change', clearError);
+  });
 
-  form.addEventListener(
-    'submit',
-    async e=>{
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
 
-      e.preventDefault();
+    let isValid = true;
+    let firstInvalid = null;
 
-
-      if(!supabaseClient){
-
-        toast(
-          'Website is not connected to Supabase.',
-          'error'
-        );
-
-        return;
+    function markField(input, isFieldValid) {
+      if (!input) return;
+      const field = input.closest('.form-field');
+      if (!field) return;
+      if (!isFieldValid) {
+        field.classList.add('invalid');
+        isValid = false;
+        if (!firstInvalid) firstInvalid = input;
+      } else {
+        field.classList.remove('invalid');
       }
+    }
 
+    const studentVal = (studentInput?.value || '').trim();
+    const parentVal = (parentInput?.value || '').trim();
+    const phoneVal = (phoneInput?.value || '').trim();
+    const emailVal = (emailInput?.value || '').trim();
+    const classVal = (classSelect?.value || '').trim();
+    const courseVal = (courseSelect?.value || '').trim();
+    const messageVal = (messageInput?.value || '').trim();
 
-      const formData=
-        new FormData(form);
+    // Validations
+    markField(studentInput, studentVal.length >= 2);
+    markField(phoneInput, /^[0-9+() -]{7,16}$/.test(phoneVal) && phoneVal.replace(/\D/g, '').length >= 7);
+    markField(emailInput, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal));
+    markField(classSelect, classVal.length > 0);
+    markField(courseSelect, courseVal.length > 0);
 
+    if (!isValid) {
+      if (firstInvalid) firstInvalid.focus();
+      toast('Please fill in all required fields correctly.', 'error');
+      return;
+    }
 
-      const payload={
-        name:
-          formData.get('name')?.toString().trim()||'',
+    if (!supabaseClient) {
+      toast('Website is not connected to Supabase.', 'error');
+      return;
+    }
 
-        phone:
-          formData.get('phone')?.toString().trim()||'',
+    const origBtnText = submitBtn ? submitBtn.textContent : 'Submit Enquiry';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting Enquiry...';
+    }
 
-        email:
-          formData.get('email')?.toString().trim()||'',
+    try {
+      const generatedId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'enq_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
 
-        message:
-          formData.get('message')?.toString().trim()||''
+      const payload = {
+        id: generatedId,
+        student: studentVal,
+        parent: parentVal || '',
+        phone: phoneVal,
+        email: emailVal,
+        klass: classVal,
+        course: courseVal,
+        message: messageVal || ''
       };
 
-
-      const {
-        error
-      }=await supabaseClient
+      const { error } = await supabaseClient
         .from('enquiries')
-        .insert(payload);
+        .insert([payload]);
 
-
-      if(error){
-
-        console.error(
-          'Enquiry error:',
-          error
-        );
-
-        toast(
-          'Could not submit your enquiry.',
-          'error'
-        );
-
+      if (error) {
+        console.error('Enquiry error:', error);
+        toast('Could not submit enquiry: ' + (error.message || 'Database error'), 'error');
         return;
       }
 
-
       form.reset();
+      toast('Thank you! We will contact you soon.', 'success');
 
-
-      toast(
-        'Thank you! We will contact you soon.',
-        'success'
-      );
-
+    } catch (err) {
+      console.error('Submission exception:', err);
+      toast('An unexpected error occurred. Please try again.', 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = origBtnText;
+      }
     }
-  );
-
+  });
 }
 
 

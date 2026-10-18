@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Enroll Now — AA Classes | Course Admission</title>
+<meta name="description" content="Enroll now in AA Classes for JEE Preparation, Olympiad Coaching, and Regular Mathematics classes. Small batches, concept-first learning, and personal mentorship.">
+</head>
+<body>
+<header class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">AA</div>
+      <div class="brand-text"><strong>AA Classes</strong></div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="courses.html">Courses</a>
+      <a href="study-material.html">Study Material</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="contact.html" class="btn btn-outline btn-sm">Get in Touch</a>
+      <a href="enroll.html" class="btn btn-gold btn-sm" style="box-shadow:0 0 0 2px var(--navy-900);">Enroll Now</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="section reveal in" id="enrollSection" style="background:var(--cream-dim);padding-top:70px;">
+  <div class="container">
+    <div class="section-head" style="text-align:center;margin-left:auto;margin-right:auto;margin-bottom:44px;">
+      <span class="section-tag">Admissions Open 2026–2027</span>
+      <h2>Start Your Learning Journey</h2>
+      <p style="color:var(--slate);font-size:16px;max-width:580px;margin:10px auto 0;">
+        Secure your seat in our expert-led mathematics batches. Choose from JEE Preparation, Olympiad Coaching, or Regular School Mathematics.
+      </p>
+    </div>
+
+    <div class="enroll-grid">
+      <!-- Left: Why Enroll & Admission Steps -->
+      <div class="enroll-info-card">
+        <span class="enroll-badge-pill">✨ Admissions 2026–27</span>
+        <h3>Why Enroll at AA Classes?</h3>
+        <p>We believe mathematics is easy when the foundations are strong. Experience concept-first learning designed to build lifelong confidence.</p>
+
+        <div class="enroll-perks">
+          <div class="enroll-perk">
+            <div class="enroll-perk-icon">📐</div>
+            <div class="enroll-perk-text">
+              <strong>Concept-First Teaching</strong>
+              <span>Deep fundamental understanding over rote memorization of formulas.</span>
+            </div>
+          </div>
+          <div class="enroll-perk">
+            <div class="enroll-perk-icon">📝</div>
+            <div class="enroll-perk-text">
+              <strong>Structured Practice &amp; Tests</strong>
+              <span>Regular chapter-wise assignments, Olympiad sets, and mock tests.</span>
+            </div>
+          </div>
+          <div class="enroll-perk">
+            <div class="enroll-perk-icon">👥</div>
+            <div class="enroll-perk-text">
+              <strong>Focused Small Batches</strong>
+              <span>Direct personal attention, doubt-clearing, and individual tracking.</span>
+            </div>
+          </div>
+          <div class="enroll-perk">
+            <div class="enroll-perk-icon">📚</div>
+            <div class="enroll-perk-text">
+              <strong>Free Study Material &amp; Papers</strong>
+              <span>Comprehensive curated notes, solved examples, and practice sets.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="enroll-steps">
+          <h4>3-Step Admission Process</h4>
+          <div class="enroll-step-list">
+            <div class="enroll-step-item">
+              <span class="enroll-step-num">1</span>
+              <span>Submit the online application form</span>
+            </div>
+            <div class="enroll-step-item">
+              <span class="enroll-step-num">2</span>
+              <span>Personal counselling &amp; diagnostic demo session</span>
+            </div>
+            <div class="enroll-step-item">
+              <span class="enroll-step-num">3</span>
+              <span>Batch allotment &amp; commence classes</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.12);font-size:13.5px;color:rgba(255,255,255,0.75);">
+          📞 Questions before applying? Call us at <strong style="color:var(--gold);">9766410096</strong>
+        </div>
+      </div>
+
+      <!-- Right: Enrollment Application Form -->
+      <div class="enroll-form-card">
+        <h3>Student Enrollment Form</h3>
+        <p>Please enter the student details below to initiate admission.</p>
+
+        <form id="enquiryForm" novalidate>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="enqStudent">Student Name *</label>
+              <input id="enqStudent" name="student" type="text" placeholder="e.g. Aarav Sharma" required>
+              <span class="form-error">Please enter the student's name.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="enqParent">Parent / Guardian Name</label>
+              <input id="enqParent" name="parent" type="text" placeholder="e.g. Rajesh Sharma">
+            </div>
+
+            <div class="form-field">
+              <label for="enqPhone">Phone / WhatsApp Number *</label>
+              <input id="enqPhone" name="phone" type="tel" placeholder="10-digit mobile number" required>
+              <span class="form-error">Please enter a valid phone number.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="enqEmail">Email Address *</label>
+              <input id="enqEmail" name="email" type="email" placeholder="e.g. student@example.com" required>
+              <span class="form-error">Please enter a valid email address.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="enqClass">Current Class *</label>
+              <select id="enqClass" name="klass" required>
+                <option value="">Select class</option>
+                <option value="Class 3-5">Class 3-5</option>
+                <option value="Class 6-8">Class 6-8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 10">Class 10</option>
+                <option value="Class 11-12">Class 11-12</option>
+              </select>
+              <span class="form-error">Please select a class.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="enqCourse">Course Interested In *</label>
+              <select id="enqCourse" name="course" required>
+                <option value="">Select course</option>
+                <option value="JEE Preparation">JEE Preparation</option>
+                <option value="Olympiad Preparation">Olympiad Preparation</option>
+                <option value="Regular Mathematics Classes">Regular Mathematics Classes</option>
+              </select>
+              <span class="form-error">Please select a course.</span>
+            </div>
+
+            <div class="form-field full">
+              <label for="enqMessage">Academic Goals or Specific Requests (Optional)</label>
+              <textarea id="enqMessage" name="message" placeholder="Tell us about previous performance, target exams, or preferred batch timings..."></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-block" id="enquirySubmitBtn" style="font-size:16px;padding:14px;">
+            Complete Enrollment Application
+          </button>
+
+          <p style="font-size:12px;color:var(--slate);text-align:center;margin-top:14px;">
+            🔒 Your contact information is kept strictly confidential and used only for admission counseling.
+          </p>
+        </form>
+
+        <div class="contact-switch-card">
+          <p>Have general questions about fees or location?</p>
+          <a href="contact.html">Visit Contact Page &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand"><div class="brand-mark">AA</div><div class="brand-text"><strong>AA Classes</strong></div></div>
+        <p>"Learn Better. Prepare Better. Achieve Better."</p>
+        <div class="social-row">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none"><path d="M14 9h3V5.5h-3C11.8 5.5 10 7.3 10 9.5V12H8v3.5h2V22h3.5v-6.5H16l.7-3.5h-3.2V9.7c0-.4.3-.7.5-.7z" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="7" r="1" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="12" rx="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M10.5 9.5l5 2.5-5 2.5z" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h5>Quick Links</h5><ul>
+        <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="courses.html">Courses</a></li>
+        <li><a href="study-material.html">Study Material</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="contact.html">Contact</a></li>
+        <li><a href="enroll.html"><strong>Enroll Now</strong></a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Courses</h5><ul>
+        <li><a href="courses.html">JEE Preparation</a></li><li><a href="courses.html">Olympiad Preparation</a></li><li><a href="courses.html">Regular Mathematics Classes</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Study Material</h5><ul>
+        <li><a href="study-material.html">Notes</a></li><li><a href="study-material.html">Practice Papers</a></li>
+        <li><a href="#" id="adminEntryLink">Admin Login</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 AA Classes. All Rights Reserved.</span>
+      <span>Made for students, by educators.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-host" id="toastHost"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
