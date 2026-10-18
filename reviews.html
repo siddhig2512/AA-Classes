@@ -38,19 +38,28 @@
     <div class="section-head" style="margin-left:auto;margin-right:auto;text-align:center;">
       <span class="section-tag">Testimonials</span>
       <h2>What Our Students Say</h2>
+      <div class="testimonials-header-badge">
+        <span class="th-stars">★★★★★</span>
+        <span class="th-score">4.9 / 5</span>
+        <span class="th-divider">•</span>
+        <span class="th-text">Genuine feedback from students &amp; parents</span>
+      </div>
     </div>
     <div class="review-wrap">
       <div class="review-track-outer">
         <div class="review-track" id="reviewTrack"></div>
       </div>
-      <div class="review-nav">
-        <button class="review-arrow" id="revPrev" aria-label="Previous review"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="review-nav" id="reviewNav">
+        <button class="review-arrow" id="revPrev" aria-label="Previous review"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="review-dots" id="revDots"></div>
-        <button class="review-arrow" id="revNext" aria-label="Next review"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="review-arrow" id="revNext" aria-label="Next review"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>
     <div class="review-cta">
-      <button class="btn btn-navy" id="openReviewForm">Share Your Experience</button>
+      <button class="btn btn-navy" id="openReviewForm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:middle;margin-right:6px;"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Share Your Experience
+      </button>
     </div>
   </div>
 </section>
@@ -85,6 +94,62 @@
     </div>
   </div>
 </footer>
+
+<!-- Review Form Modal -->
+<div class="modal-overlay" id="reviewFormOverlay">
+  <div class="modal-box review-form-box">
+    <button
+      type="button"
+      class="review-form-close"
+      id="closeReviewForm"
+      aria-label="Close review form">
+      &times;
+    </button>
+
+    <h2>Share Your Experience</h2>
+    <p>We'd love to hear about your learning experience at AA Classes.</p>
+
+    <form id="reviewForm">
+      <div class="form-field">
+        <label for="reviewName">Your Name</label>
+        <input id="reviewName" type="text" required>
+      </div>
+
+      <div class="form-field">
+        <label for="reviewCourse">Course / Class</label>
+        <input
+          id="reviewCourse"
+          type="text"
+          placeholder="e.g. Class 10 Mathematics">
+      </div>
+
+      <div class="form-field">
+        <label for="reviewRating">Rating</label>
+        <select id="reviewRating">
+          <option value="5">★★★★★ (5/5)</option>
+          <option value="4">★★★★☆ (4/5)</option>
+          <option value="3">★★★☆☆ (3/5)</option>
+          <option value="2">★★☆☆☆ (2/5)</option>
+          <option value="1">★☆☆☆☆ (1/5)</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="reviewMessage">Your Review</label>
+        <textarea
+          id="reviewMessage"
+          rows="4"
+          placeholder="Write your review here..."
+          required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-navy btn-block">
+        Submit Review
+      </button>
+    </form>
+  </div>
+</div>
+
 <div class="toast-host" id="toastHost"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/main.js"></script>

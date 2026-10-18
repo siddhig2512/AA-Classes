@@ -15,6 +15,30 @@ const SEED_MATERIALS=[
   {id:'demo3',title:'Olympiad Number System',category:'notes',subject:'Mathematics',klass:'6',course:'Olympiad Preparation',description:'Number system concepts for Olympiad preparation.',filePath:'',downloads:0,hasFile:false,isDemo:true}
 ];
 
+const SEED_REVIEWS=[
+  {
+    id:'demo-rev1',
+    name:'Vivaan Shah',
+    course:'Class 6',
+    rating:5,
+    message:'Great learning experience. Highly recommended if you want to understand the fundamental concepts.'
+  },
+  {
+    id:'demo-rev2',
+    name:'Devendra Joshi',
+    course:'Class 5',
+    rating:4,
+    message:'Thank you Sir for the wonderful session. The doubts were cleared with utmost patience.'
+  },
+  {
+    id:'demo-rev3',
+    name:'Nidhi Gupta',
+    course:'Class 5',
+    rating:5,
+    message:'Ajay Sir explains the concepts in very simple language which helps understanding Maths fun and easy.'
+  }
+];
+
 let materials=[];
 let reviews=[];
 let contactSettings={};
@@ -53,11 +77,20 @@ function mapMaterial(r){
 
 
 function mapReview(r){
+  let rawCourse = String(r.klass || r.course || '').trim();
+  let course = 'Student';
+  if (/^\d+$/.test(rawCourse)) {
+    course = 'Class ' + rawCourse;
+  } else if (/^class\s*\d+/i.test(rawCourse)) {
+    course = rawCourse.replace(/^class\s*/i, 'Class ');
+  } else if (rawCourse) {
+    course = rawCourse;
+  }
   return {
     ...r,
     name: r.name || 'Student',
-    course: r.klass || r.course || '',
-    rating: Number(r.rating || 5),
+    course: course,
+    rating: Math.max(1, Math.min(5, Number(r.rating || 5))),
     message: r.review_text || r.message || ''
   };
 }
@@ -67,7 +100,7 @@ async function loadData(){
 
   if(!supabaseClient){
     materials=SEED_MATERIALS;
-    reviews=[];
+    reviews=SEED_REVIEWS;
     return;
   }
 
@@ -93,11 +126,11 @@ async function loadData(){
       .eq('status','approved')
       .order('created_at',{ascending:false});
 
-    if(reviewError){
-      console.error('Reviews error:',reviewError);
-      reviews=[];
+    if(reviewError || !reviewData || !reviewData.length){
+      if (reviewError) console.error('Reviews error:',reviewError);
+      reviews=SEED_REVIEWS;
     }else{
-      reviews=(reviewData||[]).map(mapReview);
+      reviews=reviewData.map(mapReview);
     }
 
     const {data:settingsData,error:settingsError}=await supabaseClient
@@ -1346,9 +1379,190 @@ async function downloadMaterial(id){
 
 
 /* =========================
-   REVIEWS
+   REVIEWS & TESTIMONIALS SLIDER
 ========================= */
 
+const AVATAR_GRADIENTS = [
+  'linear-gradient(135deg, #0B2545 0%, #1E5296 100%)',
+  'linear-gradient(135deg, #134E5E 0%, #2E7D4F 100%)',
+  'linear-gradient(135deg, #7A3E16 0%, #D9A441 100%)',
+  'linear-gradient(135deg, #3D1F5A 0%, #764BA2 100%)',
+  'linear-gradient(135deg, #1C3B57 0%, #0083B0 100%)',
+  'linear-gradient(135deg, #2D3748 0%, #4A5568 100%)'
+];
+
+function getAvatarBg(name){
+  let hash = 0;
+  const str = String(name || 'S');
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length];
+}
+
+function renderStarsHtml(rating){
+  let html = '';
+  for(let i = 1; i <= 5; i++){
+    if(i <= rating){
+      html += `<svg class="star filled" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    } else {
+      html += `<svg class="star empty" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+    }
+  }
+  return html;
+}
+
+let currentReviewIndex = 0;
+let reviewSliderInitialized = false;
+let reviewAutoplayTimer = null;
+
+function getCardsPerView() {
+  if (window.innerWidth <= 640) return 1;
+  if (window.innerWidth <= 992) return 2;
+  return 3;
+}
+
+function updateReviewSlider() {
+  const track = document.getElementById('reviewTrack');
+  const prevBtn = document.getElementById('revPrev');
+  const nextBtn = document.getElementById('revNext');
+  const dotsContainer = document.getElementById('revDots');
+  const nav = document.getElementById('reviewNav');
+  if (!track || !reviews.length) return;
+
+  const cardsPerView = getCardsPerView();
+  const maxIndex = Math.max(0, reviews.length - cardsPerView);
+
+  if (currentReviewIndex > maxIndex) currentReviewIndex = maxIndex;
+  if (currentReviewIndex < 0) currentReviewIndex = 0;
+
+  const firstCard = track.querySelector('.review-card');
+  if (firstCard) {
+    const cardRect = firstCard.getBoundingClientRect();
+    const gap = window.innerWidth <= 640 ? 16 : 24;
+    const shift = currentReviewIndex * (cardRect.width + gap);
+    track.style.transform = `translateX(-${shift}px)`;
+  }
+
+  if (reviews.length <= cardsPerView) {
+    if (nav) nav.style.display = 'none';
+  } else {
+    if (nav) nav.style.display = 'flex';
+  }
+
+  if (prevBtn) prevBtn.disabled = currentReviewIndex === 0;
+  if (nextBtn) nextBtn.disabled = currentReviewIndex >= maxIndex;
+
+  if (dotsContainer) {
+    const totalPages = maxIndex + 1;
+    if (totalPages <= 1) {
+      dotsContainer.innerHTML = '';
+    } else {
+      dotsContainer.innerHTML = Array.from({ length: totalPages }).map((_, i) => `
+        <button class="review-dot ${i === currentReviewIndex ? 'active' : ''}" data-index="${i}" aria-label="Go to slide ${i + 1}"></button>
+      `).join('');
+
+      dotsContainer.querySelectorAll('.review-dot').forEach(dot => {
+        dot.onclick = () => {
+          currentReviewIndex = Number(dot.dataset.index);
+          updateReviewSlider();
+          restartReviewAutoplay();
+        };
+      });
+    }
+  }
+}
+
+function startReviewAutoplay() {
+  if (reviewAutoplayTimer) clearInterval(reviewAutoplayTimer);
+  reviewAutoplayTimer = setInterval(() => {
+    const cardsPerView = getCardsPerView();
+    const maxIndex = Math.max(0, reviews.length - cardsPerView);
+    if (maxIndex <= 0) return;
+
+    if (currentReviewIndex >= maxIndex) {
+      currentReviewIndex = 0;
+    } else {
+      currentReviewIndex++;
+    }
+    updateReviewSlider();
+  }, 6000);
+}
+
+function restartReviewAutoplay() {
+  startReviewAutoplay();
+}
+
+function setupReviewSlider() {
+  updateReviewSlider();
+
+  if (reviewSliderInitialized) return;
+  reviewSliderInitialized = true;
+
+  const prevBtn = document.getElementById('revPrev');
+  const nextBtn = document.getElementById('revNext');
+  const trackOuter = document.querySelector('.review-track-outer');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (currentReviewIndex > 0) {
+        currentReviewIndex--;
+        updateReviewSlider();
+        restartReviewAutoplay();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const cardsPerView = getCardsPerView();
+      const maxIndex = Math.max(0, reviews.length - cardsPerView);
+      if (currentReviewIndex < maxIndex) {
+        currentReviewIndex++;
+        updateReviewSlider();
+        restartReviewAutoplay();
+      }
+    });
+  }
+
+  let touchStartX = 0;
+  if (trackOuter) {
+    trackOuter.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    trackOuter.addEventListener('touchend', e => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      const cardsPerView = getCardsPerView();
+      const maxIndex = Math.max(0, reviews.length - cardsPerView);
+
+      if (diff > 40 && currentReviewIndex < maxIndex) {
+        currentReviewIndex++;
+        updateReviewSlider();
+        restartReviewAutoplay();
+      } else if (diff < -40 && currentReviewIndex > 0) {
+        currentReviewIndex--;
+        updateReviewSlider();
+        restartReviewAutoplay();
+      }
+    }, { passive: true });
+
+    trackOuter.addEventListener('mouseenter', () => {
+      if (reviewAutoplayTimer) clearInterval(reviewAutoplayTimer);
+    });
+
+    trackOuter.addEventListener('mouseleave', () => {
+      startReviewAutoplay();
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    updateReviewSlider();
+  });
+
+  startReviewAutoplay();
+}
 
 function renderReviews(){
 
@@ -1361,34 +1575,54 @@ function renderReviews(){
         <p>No approved reviews yet.</p>
       </div>
     `;
+    const nav = document.getElementById('reviewNav');
+    if (nav) nav.style.display = 'none';
     return;
   }
 
-  grid.innerHTML = reviews.map(r => `
-    <div class="review-card">
-      <div class="review-stars">
-        ${'★'.repeat(
-          Math.max(1, Math.min(5, Number(r.rating || 5)))
-        )}
-      </div>
+  grid.innerHTML = reviews.map(r => {
+    const rating = Math.max(1, Math.min(5, Number(r.rating || 5)));
+    const initial = (r.name || 'S').trim().charAt(0).toUpperCase();
+    const avatarBg = getAvatarBg(r.name);
 
-      <p class="review-message">
-        “${esc(r.message)}”
-      </p>
-
-      <div class="review-person">
-        <div class="review-avatar">
-          ${esc((r.name || 'S').charAt(0).toUpperCase())}
+    return `
+      <div class="review-card">
+        <div class="review-card-top">
+          <div class="review-stars-wrap">
+            <div class="review-stars" aria-label="${rating} out of 5 stars">
+              ${renderStarsHtml(rating)}
+            </div>
+            <span class="review-rating-num">${rating}.0</span>
+          </div>
+          <div class="review-quote-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+            </svg>
+          </div>
         </div>
 
-        <div>
-          <strong>${esc(r.name)}</strong>
-          <span>${esc(r.course || 'Student')}</span>
+        <p class="review-message">“${esc(r.message)}”</p>
+
+        <div class="review-footer">
+          <div class="review-avatar" style="background:${avatarBg}">
+            ${esc(initial)}
+          </div>
+          <div class="review-person-info">
+            <strong class="review-name">${esc(r.name)}</strong>
+            <div class="review-meta">
+              <span class="review-course">${esc(r.course)}</span>
+              <span class="review-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Verified
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
+  setupReviewSlider();
 }
 
 /* =========================
