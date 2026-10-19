@@ -134,17 +134,21 @@ async function load(){
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (!lcError && lcData) {
-            liveClasses = lcData;
+        if (!lcError && Array.isArray(lcData)) {
+            liveClasses = lcData.filter(x => x && x.id !== 'demo-live-1' && x.id !== 'demo-live-2');
             localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
         } else {
             const cached = localStorage.getItem('aa_live_classes');
-            liveClasses = cached ? JSON.parse(cached) : [];
+            const parsed = cached ? JSON.parse(cached) : [];
+            liveClasses = Array.isArray(parsed) ? parsed.filter(x => x && x.id !== 'demo-live-1' && x.id !== 'demo-live-2') : [];
+            localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
         }
     } catch(err) {
         console.warn('live_classes load error:', err);
         const cached = localStorage.getItem('aa_live_classes');
-        liveClasses = cached ? JSON.parse(cached) : [];
+        const parsed = cached ? JSON.parse(cached) : [];
+        liveClasses = Array.isArray(parsed) ? parsed.filter(x => x && x.id !== 'demo-live-1' && x.id !== 'demo-live-2') : [];
+        localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
     }
 
     render();

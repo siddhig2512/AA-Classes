@@ -141,13 +141,28 @@
         <p>Join Ajay Sir for live concept-building masterclasses, past-paper walkthroughs, and real-time doubt clearing. Click any class to join directly.</p>
       </div>
       <div class="live-counter-pill" id="liveCounterPill">
-        <span class="live-dot-pulse"></span>
-        <span id="liveStatusText">Live Sessions Available</span>
+        <span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block;"></span>
+        <span id="liveStatusText">No Upcoming Classes</span>
       </div>
     </div>
 
     <div class="live-grid" id="liveClassesGrid">
-      <!-- Populated dynamically via js/main.js -->
+      <div class="live-empty-state">
+        <div class="live-empty-icon-wrap">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+          </svg>
+        </div>
+        <h3>No Upcoming Classes</h3>
+        <p>There are no live classes scheduled right now. Ajay Sir regularly conducts interactive problem-solving sessions, Olympiad masterclasses, and revision batches. Check back soon or contact our counselling team!</p>
+        <div class="live-empty-actions">
+          <a href="contact.html" class="btn btn-primary btn-sm">Enquire About Next Live Batch</a>
+          <a href="study-material.html" class="btn btn-outline btn-sm">Browse Free Study Notes</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>

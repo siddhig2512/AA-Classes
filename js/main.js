@@ -39,28 +39,23 @@ const SEED_REVIEWS=[
   }
 ];
 
-const SEED_LIVE_CLASSES=[
-  {
-    id:'demo-live-1',
-    topic:'Quadratic Equations & Polynomials — Fast Problem Solving',
-    target_class:'Class 10 • Mathematics',
-    class_date:'2026-10-25',
-    class_time:'17:30',
-    class_link:'https://meet.google.com/new',
-    description:'Master quadratic formulas, discriminant analysis, nature of roots, and previous board exam problems with Ajay Sir.',
-    is_active:true
-  },
-  {
-    id:'demo-live-2',
-    topic:'JEE Mathematics: Trigonometric Identities & Inequalities',
-    target_class:'Class 11 & 12 • JEE Prep',
-    class_date:'2026-10-28',
-    class_time:'18:30',
-    class_link:'https://meet.google.com/new',
-    description:'Advanced problem solving, shortcuts, and graph transformations for competitive exams.',
-    is_active:true
+const SEED_LIVE_CLASSES=[];
+
+function getStoredLiveClasses(){
+  try{
+    const raw=localStorage.getItem('aa_live_classes');
+    if(!raw)return [];
+    const parsed=JSON.parse(raw);
+    if(!Array.isArray(parsed))return [];
+    const cleaned=parsed.filter(item=>item && item.id!=='demo-live-1' && item.id!=='demo-live-2');
+    if(cleaned.length!==parsed.length){
+      localStorage.setItem('aa_live_classes',JSON.stringify(cleaned));
+    }
+    return cleaned;
+  }catch(e){
+    return [];
   }
-];
+}
 
 let materials=[];
 let reviews=[];
@@ -125,6 +120,7 @@ async function loadData(){
   if(!supabaseClient){
     materials=SEED_MATERIALS;
     reviews=SEED_REVIEWS;
+    liveClasses=getStoredLiveClasses();
     return;
   }
 
@@ -177,24 +173,21 @@ async function loadData(){
         .select('*')
         .order('class_date',{ascending:true});
 
-      if(!liveError && liveData && liveData.length>0){
-        liveClasses=liveData;
+      if(!liveError && Array.isArray(liveData)){
+        liveClasses=liveData.filter(item=>item && item.id!=='demo-live-1' && item.id!=='demo-live-2');
       }else{
-        const localLive=localStorage.getItem('aa_live_classes');
-        liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
+        liveClasses=getStoredLiveClasses();
       }
     }catch(e){
       console.warn('Live classes load error:',e);
-      const localLive=localStorage.getItem('aa_live_classes');
-      liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
+      liveClasses=getStoredLiveClasses();
     }
 
   }catch(error){
     console.error('loadData error:',error);
     materials=SEED_MATERIALS;
     reviews=[];
-    const localLive=localStorage.getItem('aa_live_classes');
-    liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
+    liveClasses=getStoredLiveClasses();
   }
 }
 
@@ -241,22 +234,42 @@ function formatClassTime(timeStr){
 function renderLiveClasses(){
   const grid=document.getElementById('liveClassesGrid');
   const countText=document.getElementById('liveStatusText');
+  const counterPill=document.getElementById('liveCounterPill');
   if(!grid)return;
 
-  if(countText){
-    const count=liveClasses.length;
-    countText.textContent=count===0
-      ?'No Scheduled Sessions'
-      :`${count} Live Session${count===1?'':'s'} Available`;
+  const count=(liveClasses && Array.isArray(liveClasses)) ? liveClasses.length : 0;
+
+  if(counterPill){
+    if(count===0){
+      counterPill.innerHTML=`
+        <span style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block;"></span>
+        <span id="liveStatusText">No Upcoming Classes</span>
+      `;
+    }else{
+      counterPill.innerHTML=`
+        <span class="live-dot-pulse"></span>
+        <span id="liveStatusText">${count} Live Session${count===1?'':'s'} Scheduled</span>
+      `;
+    }
   }
 
-  if(!liveClasses || liveClasses.length===0){
+  if(count===0){
     grid.innerHTML=`
       <div class="live-empty-state">
-        <div class="live-empty-icon">📡</div>
-        <h3>No Live Classes Scheduled Right Now</h3>
-        <p>New interactive live sessions, revision batches, and doubt-clearing classes are scheduled regularly by Ajay Sir. Check back soon or contact our counselling team!</p>
-        <a href="contact.html" class="btn btn-outline btn-sm">Enquire About Next Live Batch</a>
+        <div class="live-empty-icon-wrap">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+          </svg>
+        </div>
+        <h3>No Upcoming Classes</h3>
+        <p>There are no live classes scheduled right now. Ajay Sir regularly conducts interactive problem-solving sessions, Olympiad masterclasses, and revision batches. Check back soon or contact our counselling team!</p>
+        <div class="live-empty-actions">
+          <a href="contact.html" class="btn btn-primary btn-sm">Enquire About Next Live Batch</a>
+          <a href="study-material.html" class="btn btn-outline btn-sm">Browse Free Study Notes</a>
+        </div>
       </div>
     `;
     return;
@@ -2253,6 +2266,8 @@ async function init(){
   renderCourses();
 
   renderWhy();
+
+  renderLiveClasses();
 
   await loadData();
 
