@@ -4,13 +4,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/admin.css"><title>Admin Dashboard — AA Classes</title></head>
+<link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/admin.css"><title>Admin Dashboard — AA Olympiad Classes</title></head>
 <body>
 <div class="admin-shell">
 <aside class="admin-sidebar">
- <div class="brand"><div class="brand-mark">AA</div><div class="brand-text"><strong>AA Classes</strong><span>ADMIN PANEL</span></div></div>
+ <div class="brand"><div class="brand-mark">AA</div><div class="brand-text"><strong>AA Olympiad Classes</strong><span>ADMIN PANEL</span></div></div>
  <nav class="admin-nav">
   <button class="active" data-panel="dashboard">Dashboard</button>
+  <button data-panel="live-classes">Live Classes</button>
   <button data-panel="materials">Study Material</button>
   <button data-panel="reviews">Reviews</button>
   <button data-panel="enquiries">Enquiries</button>
@@ -21,6 +22,35 @@
 </aside>
 <main class="admin-main">
 <section class="admin-panel active" id="panel-dashboard"><div class="admin-topbar"><h2>Dashboard</h2></div><div class="stat-grid" id="stats"></div></section>
+<section class="admin-panel" id="panel-live-classes">
+  <div class="admin-topbar">
+    <div>
+      <h2>Manage Live Classes</h2>
+      <p style="color:var(--slate);font-size:13.5px;margin-top:4px;">Add and manage live class links, dates, times, and topics displayed on the website home screen.</p>
+    </div>
+    <button class="btn btn-gold btn-sm" id="openLiveModal">+ Add Live Class</button>
+  </div>
+  <div class="admin-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Class Topic</th>
+            <th>Batch / Subject</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Meeting Link</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="liveClassesBody">
+          <tr><td colspan="7" class="empty-mini">Loading live classes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 <section class="admin-panel" id="panel-materials"><div class="admin-topbar"><h2>Manage Study Material</h2><button class="btn btn-gold btn-sm" id="openUpload">+ Upload Material</button></div><div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Category</th><th>Subject</th><th>Class</th><th>Type</th><th>Downloads</th><th>Action</th></tr></thead><tbody id="materialsBody"></tbody></table></div></div></section>
 <section class="admin-panel" id="panel-reviews"><div class="admin-topbar"><h2>Manage Reviews</h2></div><div class="admin-card"><h4>Pending Approval</h4><div class="table-wrap"><table><thead><tr><th>Name</th><th>Class/Course</th><th>Rating</th><th>Review</th><th>Actions</th></tr></thead><tbody id="pendingBody"></tbody></table></div></div><div class="admin-card"><h4>All Reviews</h4><div class="table-wrap"><table><thead><tr><th>Name</th><th>Rating</th><th>Review</th><th>Status</th><th>Action</th></tr></thead><tbody id="allReviewsBody"></tbody></table></div></div></section>
 <section class="admin-panel" id="panel-enquiries"><div class="admin-topbar"><h2>Enquiries</h2></div><div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Student</th><th>Parent</th><th>Phone</th><th>Email</th><th>Class</th><th>Course</th><th>Message</th></tr></thead><tbody id="enquiriesBody"></tbody></table></div></div></section>
@@ -63,6 +93,44 @@
 </section>
 </main></div>
 <div class="modal-overlay" id="uploadOverlay"><div class="modal-box"><button class="modal-close" id="closeUpload">×</button><div class="modal-eyebrow">Study material</div><h3>Upload Material</h3><p class="modal-sub">Allowed files: PDF, Word DOC and DOCX. Maximum 8 MB.</p><form id="uploadForm"><div class="form-field"><label>Material Title</label><input id="upTitle" required></div><div class="form-field"><label>Category</label><select id="upCategory"><option value="notes">Notes</option><option value="papers">Practice Paper</option></select></div><div class="form-field"><label>Subject</label><input id="upSubject" required></div><div class="form-field"><label>Class / Course</label><input id="upClass" required></div><div class="form-field"><label>Short Description</label><textarea id="upDesc"></textarea></div><div class="form-field"><label>File (PDF / DOC / DOCX)</label><input id="upFile" type="file" accept=".pdf,.doc,.docx" required><span class="form-hint">PDF, DOC or DOCX only · up to 8 MB</span></div><button class="btn btn-navy btn-block" id="uploadBtn">Upload Material</button></form></div></div>
+<div class="modal-overlay" id="liveModalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="closeLiveModal">×</button>
+    <div class="modal-eyebrow">Interactive sessions</div>
+    <h3>Schedule Live Class</h3>
+    <p class="modal-sub">Add class link, date, time, and topic. This will immediately be displayed on the website home screen.</p>
+    <form id="liveClassForm">
+      <div class="form-field">
+        <label for="liveTopic">Class Topic *</label>
+        <input id="liveTopic" placeholder="e.g. Quadratic Equations & Polynomials" required>
+      </div>
+      <div class="form-field">
+        <label for="liveClass">Class / Target Batch</label>
+        <input id="liveClass" placeholder="e.g. Class 10 • Mathematics">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-field">
+          <label for="liveDate">Date *</label>
+          <input type="date" id="liveDate" required>
+        </div>
+        <div class="form-field">
+          <label for="liveTime">Time *</label>
+          <input type="time" id="liveTime" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="liveLink">Class Link (Google Meet / Zoom / YouTube) *</label>
+        <input type="url" id="liveLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" required>
+        <span class="form-hint">Students can click directly to join via this link. Include https://</span>
+      </div>
+      <div class="form-field">
+        <label for="liveDesc">Short Note / Instructions (Optional)</label>
+        <textarea id="liveDesc" rows="3" placeholder="e.g. Keep practice notebook ready. Ajay Sir will cover shortcuts and board questions."></textarea>
+      </div>
+      <button class="btn btn-navy btn-block" id="saveLiveBtn">Schedule &amp; Publish Class</button>
+    </form>
+  </div>
+</div>
 <div class="toast-host" id="toastHost"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="../js/admin.js"></script>
 </body></html>

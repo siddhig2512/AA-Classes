@@ -1,4 +1,4 @@
-# AA Classes — Multi-page Website
+# AA Olympiad Classes — Multi-page Website
 
 ## Pages
 - index.html
@@ -36,4 +36,4 @@ The browser must only contain the Supabase publishable/anon key, never the servi
 For a production deployment with multiple authenticated users, add an admin role/profile table and tighten authenticated RLS policies to admin users only.
 
 ## Student reviews
-The visual student-review section is kept from the supplied AA Classes design. New reviews are inserted as `pending` and are shown publicly only after an admin changes them to `approved`.
+The visual student-review section is kept from the supplied AA Olympiad Classes design. New reviews are inserted as `pending` and are shown publicly only after an admin changes them to `approved`.

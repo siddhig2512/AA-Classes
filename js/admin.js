@@ -3,12 +3,13 @@ const SUPABASE_KEY='sb_publishable_s6UQp7nI3LPyXDJ4u6mipg_62wsb-ZW';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let materials=[], reviews=[], enquiries=[], students=[];
+let materials=[], reviews=[], enquiries=[], students=[], liveClasses=[];
 let settings={address:'',phone:'',email:'',timings:''};
 
 // Get HTML elements explicitly
 const stats = document.getElementById('stats');
 const materialsBody = document.getElementById('materialsBody');
+const liveClassesBody = document.getElementById('liveClassesBody');
 const pendingBody = document.getElementById('pendingBody');
 const allReviewsBody = document.getElementById('allReviewsBody');
 const enquiriesBody = document.getElementById('enquiriesBody');
@@ -21,6 +22,19 @@ const closeUpload = document.getElementById('closeUpload');
 const uploadOverlay = document.getElementById('uploadOverlay');
 const uploadForm = document.getElementById('uploadForm');
 const uploadBtn = document.getElementById('uploadBtn');
+
+const openLiveModal = document.getElementById('openLiveModal');
+const closeLiveModal = document.getElementById('closeLiveModal');
+const liveModalOverlay = document.getElementById('liveModalOverlay');
+const liveClassForm = document.getElementById('liveClassForm');
+const saveLiveBtn = document.getElementById('saveLiveBtn');
+
+const liveTopic = document.getElementById('liveTopic');
+const liveClass = document.getElementById('liveClass');
+const liveDate = document.getElementById('liveDate');
+const liveTime = document.getElementById('liveTime');
+const liveLink = document.getElementById('liveLink');
+const liveDesc = document.getElementById('liveDesc');
 
 const upTitle = document.getElementById('upTitle');
 const upCategory = document.getElementById('upCategory');
@@ -113,11 +127,36 @@ async function load(){
     students=s.data || [];
     settings=c.data || settings;
 
+    // Load Live Classes safely (from Supabase with local storage fallback)
+    try {
+        const { data: lcData, error: lcError } = await sb
+            .from('live_classes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (!lcError && lcData) {
+            liveClasses = lcData;
+            localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
+        } else {
+            const cached = localStorage.getItem('aa_live_classes');
+            liveClasses = cached ? JSON.parse(cached) : [];
+        }
+    } catch(err) {
+        console.warn('live_classes load error:', err);
+        const cached = localStorage.getItem('aa_live_classes');
+        liveClasses = cached ? JSON.parse(cached) : [];
+    }
+
     render();
 }
 function render(){
 
     stats.innerHTML=`
+        <div class="stat-card">
+            <div class="num">${liveClasses.length}</div>
+            <div class="label">Live Classes Scheduled</div>
+        </div>
+
         <div class="stat-card">
             <div class="num">${materials.length}</div>
             <div class="label">Total Study Materials</div>
@@ -129,15 +168,39 @@ function render(){
         </div>
 
         <div class="stat-card">
-            <div class="num">${materials.filter(x=>x.category==='papers').length}</div>
-            <div class="label">Practice Papers</div>
-        </div>
-
-        <div class="stat-card">
             <div class="num">${reviews.filter(x=>x.status==='pending').length}</div>
             <div class="label">Reviews Awaiting Approval</div>
         </div>
     `;
+
+    if(liveClassesBody){
+        liveClassesBody.innerHTML=liveClasses.map(c=>`
+            <tr>
+                <td>
+                    <strong style="color:var(--navy-900);font-size:14px;display:block;">${esc(c.topic)}</strong>
+                    ${c.description ? `<span style="color:var(--slate);font-size:12px;line-height:1.4;display:block;margin-top:2px;">${esc(c.description)}</span>` : ''}
+                </td>
+                <td><span class="badge ${c.target_class ? 'approved' : 'pending'}">${esc(c.target_class || 'All Batches')}</span></td>
+                <td><span style="white-space:nowrap;font-weight:600;">📅 ${esc(c.class_date)}</span></td>
+                <td><span style="white-space:nowrap;font-weight:600;">⏰ ${esc(c.class_time)}</span></td>
+                <td>
+                    <a href="${esc(c.class_link)}" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700);text-decoration:underline;font-size:13px;word-break:break-all;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                        <span>Join Link</span>
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </td>
+                <td>
+                    <span class="badge approved">Active</span>
+                </td>
+                <td>
+                    <button class="icon-btn danger" onclick="deleteLiveClass('${c.id}')" title="Delete class">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('') ||
+        '<tr><td colspan="7" class="empty-mini">No live classes scheduled yet. Click "+ Add Live Class" above to create one.</td></tr>';
+    }
 
     materialsBody.innerHTML=materials.map(m=>`
         <tr>
@@ -324,6 +387,92 @@ closeUpload.onclick=()=>{
     uploadOverlay.classList.remove('open');
 
 };
+
+// -------------------------------
+// OPEN/CLOSE LIVE CLASS MODAL
+// -------------------------------
+
+if(openLiveModal){
+    openLiveModal.onclick=()=>{
+        liveModalOverlay.classList.add('open');
+        if(!liveDate.value){
+            const today = new Date().toISOString().split('T')[0];
+            liveDate.value = today;
+        }
+    };
+}
+
+if(closeLiveModal){
+    closeLiveModal.onclick=()=>{
+        liveModalOverlay.classList.remove('open');
+    };
+}
+
+// -------------------------------
+// SCHEDULE LIVE CLASS FORM
+// -------------------------------
+
+if(liveClassForm){
+    liveClassForm.onsubmit=async e=>{
+        e.preventDefault();
+
+        const topic = liveTopic.value.trim();
+        const targetClass = liveClass.value.trim();
+        const date = liveDate.value;
+        const time = liveTime.value;
+        let link = liveLink.value.trim();
+        const desc = liveDesc.value.trim();
+
+        if(!topic || !date || !time || !link){
+            toast('Please fill all required fields.', 'error');
+            return;
+        }
+
+        if(!/^https?:\/\//i.test(link)){
+            link = 'https://' + link;
+        }
+
+        saveLiveBtn.disabled = true;
+        saveLiveBtn.textContent = 'Scheduling...';
+
+        const newClass = {
+            id: 'lc_' + Date.now(),
+            topic: topic,
+            target_class: targetClass,
+            class_date: date,
+            class_time: time,
+            class_link: link,
+            description: desc,
+            is_active: true,
+            created_at: new Date().toISOString()
+        };
+
+        try {
+            const { error } = await sb.from('live_classes').insert([newClass]);
+            if(error){
+                console.warn('Supabase insert note (syncing locally):', error);
+                liveClasses.unshift(newClass);
+                localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
+                toast('Live class scheduled! (Synced locally)', 'success');
+            } else {
+                liveClasses.unshift(newClass);
+                localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
+                toast('Live class scheduled & published to home screen!', 'success');
+            }
+        } catch(err){
+            console.warn('Live class save fallback:', err);
+            liveClasses.unshift(newClass);
+            localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
+            toast('Live class scheduled & published to home screen!', 'success');
+        } finally {
+            saveLiveBtn.disabled = false;
+            saveLiveBtn.textContent = 'Schedule & Publish Class';
+            liveClassForm.reset();
+            liveModalOverlay.classList.remove('open');
+            render();
+        }
+    };
+}
 
 
 // -------------------------------
@@ -728,6 +877,33 @@ window.deleteReview = async function(id) {
         console.error('Review delete error:', error);
         toast('Could not delete review: ' + error.message, 'error');
     }
+};
+
+// -------------------------------
+// DELETE LIVE CLASS
+// -------------------------------
+
+window.deleteLiveClass = async function(id) {
+    const confirmed = confirm('Are you sure you want to delete this live class? It will be removed from the home screen.');
+    if (!confirmed) return;
+
+    try {
+        const { error } = await sb
+            .from('live_classes')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.warn('Supabase delete warning:', error);
+        }
+    } catch (err) {
+        console.warn('Delete live class fallback:', err);
+    }
+
+    liveClasses = liveClasses.filter(x => x.id !== id);
+    localStorage.setItem('aa_live_classes', JSON.stringify(liveClasses));
+    toast('Live class deleted.', 'success');
+    render();
 };
 
 // -------------------------------

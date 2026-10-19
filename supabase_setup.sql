@@ -1,4 +1,4 @@
--- AA Classes Supabase setup
+-- AA Olympiad Classes Supabase setup
 -- Run this in Supabase SQL Editor.
 create extension if not exists pgcrypto;
 
@@ -109,3 +109,27 @@ using (bucket_id='study-materials');
 -- This project keeps the bucket private for safer defaults; to make public downloads work
 -- immediately, run the following instead:
 -- update storage.buckets set public=true where id='study-materials';
+
+-- Live Classes Table
+create table if not exists live_classes (
+  id text primary key,
+  topic text not null,
+  class_link text not null,
+  class_date text not null,
+  class_time text not null,
+  target_class text default '',
+  description text default '',
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+alter table live_classes enable row level security;
+
+-- Public website policy: allow any visitor to read upcoming live classes
+drop policy if exists "public read live classes" on live_classes;
+create policy "public read live classes" on live_classes for select to anon, authenticated using (true);
+
+-- Authenticated admin policy: allow full management of live classes
+drop policy if exists "authenticated manage live classes" on live_classes;
+create policy "authenticated manage live classes" on live_classes for all to authenticated using (true) with check (true);
+

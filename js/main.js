@@ -1,4 +1,4 @@
-/* AA Classes public website */
+/* AA Olympiad Classes public website */
 
 let currentStudent = null;
 
@@ -39,8 +39,32 @@ const SEED_REVIEWS=[
   }
 ];
 
+const SEED_LIVE_CLASSES=[
+  {
+    id:'demo-live-1',
+    topic:'Quadratic Equations & Polynomials — Fast Problem Solving',
+    target_class:'Class 10 • Mathematics',
+    class_date:'2026-10-25',
+    class_time:'17:30',
+    class_link:'https://meet.google.com/new',
+    description:'Master quadratic formulas, discriminant analysis, nature of roots, and previous board exam problems with Ajay Sir.',
+    is_active:true
+  },
+  {
+    id:'demo-live-2',
+    topic:'JEE Mathematics: Trigonometric Identities & Inequalities',
+    target_class:'Class 11 & 12 • JEE Prep',
+    class_date:'2026-10-28',
+    class_time:'18:30',
+    class_link:'https://meet.google.com/new',
+    description:'Advanced problem solving, shortcuts, and graph transformations for competitive exams.',
+    is_active:true
+  }
+];
+
 let materials=[];
 let reviews=[];
+let liveClasses=[];
 let contactSettings={};
 let currentTab='notes';
 
@@ -146,11 +170,155 @@ async function loadData(){
       contactSettings=settingsData||{};
     }
 
+    /* Load Live Classes */
+    try{
+      const {data:liveData,error:liveError}=await supabaseClient
+        .from('live_classes')
+        .select('*')
+        .order('class_date',{ascending:true});
+
+      if(!liveError && liveData && liveData.length>0){
+        liveClasses=liveData;
+      }else{
+        const localLive=localStorage.getItem('aa_live_classes');
+        liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
+      }
+    }catch(e){
+      console.warn('Live classes load error:',e);
+      const localLive=localStorage.getItem('aa_live_classes');
+      liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
+    }
+
   }catch(error){
     console.error('loadData error:',error);
     materials=SEED_MATERIALS;
     reviews=[];
+    const localLive=localStorage.getItem('aa_live_classes');
+    liveClasses=(localLive && JSON.parse(localLive).length>0) ? JSON.parse(localLive) : SEED_LIVE_CLASSES;
   }
+}
+
+function formatClassDate(dateStr){
+  if(!dateStr)return '';
+  try{
+    if(isNaN(Date.parse(dateStr)))return dateStr;
+    const parts=dateStr.split('-');
+    if(parts.length===3){
+      const year=parseInt(parts[0],10);
+      const month=parseInt(parts[1],10)-1;
+      const day=parseInt(parts[2],10);
+      const d=new Date(year,month,day);
+      return d.toLocaleDateString('en-IN',{
+        weekday:'short',
+        day:'numeric',
+        month:'short',
+        year:'numeric'
+      });
+    }
+    const d=new Date(dateStr);
+    return d.toLocaleDateString('en-IN',{
+      weekday:'short',
+      day:'numeric',
+      month:'short',
+      year:'numeric'
+    });
+  }catch(e){
+    return dateStr;
+  }
+}
+
+function formatClassTime(timeStr){
+  if(!timeStr)return '';
+  if(/^\d{1,2}:\d{2}$/.test(timeStr)){
+    const [h,m]=timeStr.split(':').map(Number);
+    const ampm=h>=12?'PM':'AM';
+    const hour12=h%12||12;
+    return `${String(hour12).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm} IST`;
+  }
+  return timeStr;
+}
+
+function renderLiveClasses(){
+  const grid=document.getElementById('liveClassesGrid');
+  const countText=document.getElementById('liveStatusText');
+  if(!grid)return;
+
+  if(countText){
+    const count=liveClasses.length;
+    countText.textContent=count===0
+      ?'No Scheduled Sessions'
+      :`${count} Live Session${count===1?'':'s'} Available`;
+  }
+
+  if(!liveClasses || liveClasses.length===0){
+    grid.innerHTML=`
+      <div class="live-empty-state">
+        <div class="live-empty-icon">📡</div>
+        <h3>No Live Classes Scheduled Right Now</h3>
+        <p>New interactive live sessions, revision batches, and doubt-clearing classes are scheduled regularly by Ajay Sir. Check back soon or contact our counselling team!</p>
+        <a href="contact.html" class="btn btn-outline btn-sm">Enquire About Next Live Batch</a>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML=liveClasses.map(c=>{
+    const formattedDate=formatClassDate(c.class_date);
+    const formattedTime=formatClassTime(c.class_time);
+    const target=c.target_class||'All Batches';
+    const link=c.class_link||'#';
+
+    return `
+      <article class="live-card">
+        <div class="live-card-top">
+          <span class="live-status-pill">
+            <span class="live-dot-pulse"></span> Upcoming Live
+          </span>
+          <span class="live-target-badge">${esc(target)}</span>
+        </div>
+
+        <h3 class="live-card-title">${esc(c.topic)}</h3>
+
+        ${c.description?`<p class="live-card-desc">${esc(c.description)}</p>`:''}
+
+        <div class="live-schedule-box">
+          <div class="live-schedule-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span><strong>Date:</strong> ${esc(formattedDate)}</span>
+          </div>
+
+          <div class="live-schedule-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span><strong>Time:</strong> ${esc(formattedTime)}</span>
+          </div>
+
+          <div class="live-schedule-item instructor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span><strong>Faculty:</strong> Ajay Sir (Expert Educator)</span>
+          </div>
+        </div>
+
+        <a href="${esc(link)}" target="_blank" rel="noopener noreferrer" class="btn btn-gold btn-live-join" id="joinLive-${esc(c.id)}">
+          <span>Join Live Class</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </article>
+    `;
+  }).join('');
 }
 
 function renderCourses(){
@@ -2087,6 +2255,8 @@ async function init(){
   renderWhy();
 
   await loadData();
+
+  renderLiveClasses();
 
   populateFilters();
 
